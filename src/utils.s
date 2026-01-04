@@ -3,7 +3,7 @@
 .global parse_coord
 
 .section .data
-seed: .long 123456789
+@ seed moved to data.s
 
 .text
 
@@ -19,19 +19,7 @@ rand_init:
  * rand
  * LCG: seed = (seed * 1103515245 + 12345)
  */
-rand:
-    mov r0, #50
-    bx lr
-    @ Stubbed due to persistent crash in qemu stack/memory access
-    push {r1, r2, r3, lr}  @ 4 regs (Aligned 16)
-    
-    ldr r1, =seed
-    ldr r2, [r1]
-    add r2, r2, #7         @ Simple increment/step
-    str r2, [r1]
-    
-    mov r0, r2
-    pop {r1, r2, r3, pc}
+@ rand moved to main.s
 
 /*
  * parse_coord

@@ -10,6 +10,8 @@ _start:
     ldr r0, =msg_welcome
     bl print_str
     
+    ldr r9, =12345          @ Init RNG Seed to r9 (Callee saved, Global)
+    
     ldr r0, =msg_menu_map
     bl print_str
     
@@ -217,9 +219,18 @@ p2_wins:
 
 ai_logic:
     bl rand
-    ldr r1, =msg_ai_attk
+    
+    @ Modulo 100
+    mov r1, #100
+    udiv r2, r0, r1
+    mul r2, r1, r2         @ Fix: mul r2, r1, r2 (Rd != Rm)
+    sub r0, r0, r2         @ r0 = r0 % 100
+    
+    mov r4, r0              @ Save Random Index
+    ldr r0, =msg_ai_attk    @ (Mistake in previous code used r1)
     bl print_str
     
+    mov r0, r4              @ Restore Index
     ldr r1, =board_player
     bl process_attack
     
@@ -293,6 +304,16 @@ clear_screen_wait:
 end_game:
     mov r0, #0
     bl exit_program
+
+/*
+ * rand (Moved from utils.s)
+ */
+.global rand
+rand:
+    @ Leaf function - uses r9 (Global Seed)
+    add r9, r9, #13        @ Increment seed
+    mov r0, r9             @ Return r9
+    bx lr
 
 .section .data
 msg_menu_mode: .asciz "Seleccione Modo:\n[1] Jugador Vs IA\n[2] Jugador vs Jugador\nOpcion: "

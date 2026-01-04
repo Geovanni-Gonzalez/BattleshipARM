@@ -1,0 +1,30 @@
+{
+    "tech": [
+        "ARM Assembly",
+        "GNU Toolchain",
+        "Make",
+        "Shell Scripting"
+    ],
+    "features": [
+        "Juego de Batalla Naval en Consola",
+        "Modo Jugador vs IA",
+        "Gráficos ANSI y Arte ASCII",
+        "Gestión Manual de Memoria y Pila",
+        "Optimización de Funciones Hoja"
+    ],
+    "stack": {
+        "language": "ARM Assembly (v7)",
+        "framework": "Native Linux Syscalls",
+        "tools": [
+            "QEMU",
+            "WSL",
+            "GNU Assembler",
+            "GNU Linker"
+        ]
+    },
+    "screenshots": [],
+    "description": {
+        "es": "Implementación de bajo nivel del juego Batalla Naval en Ensamblador ARM. Ejecutado en QEMU/Linux, destaca por su gestión directa de registros, manejo seguro de la pila, lógica de IA con RNG basado en registros y una interfaz visual pulida con códigos ANSI.",
+        "en": "Low-level implementation of Battleship in ARM Assembly. Running on QEMU/Linux, it features direct register management, safe stack handling, AI logic with register-based RNG, and a polished UI using ANSI codes."
+    }
+}
