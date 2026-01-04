@@ -31,6 +31,10 @@ ship_name_5: .asciz "Destructor"
 ship_names_ptr: .word ship_name_1, ship_name_2, ship_name_3, ship_name_4, ship_name_5
 
 newline:          .asciz "\n"
+.global msg_header_enemy
+msg_header_enemy: .asciz "\n=== VISTA ENEMIGO ===\n"
+.global ansi_cls
+ansi_cls: .asciz "\033[H\033[J"
 
 /* Estructuras de Barcos (ID, Tamaño, Nombre) */
 /* Se implementará como bytes: ID, Size, <Chars para Nombre> */
@@ -43,9 +47,26 @@ ships_info:
     .byte 5, 2  /* Destroyer */
     .byte 0     /* Fin de lista */
 
-.section .bss
+@ Moved to .data to simplify memory layout
+.section .data
 .global input_buffer
-input_buffer: .skip 32  /* Buffer para entrada de teclado */
+input_buffer: .skip 32
+.align 4
 .align 4
 .global game_mode
 game_mode: .word 0      /* 0 = PvPC, 1 = PvP */
+
+.global dbg_1
+.global dbg_2
+.global dbg_3
+.global dbg_4
+.global dbg_5
+.global dbg_6
+dbg_1: .asciz "[DBG] Enter Process Attack\n"
+dbg_2: .asciz "[DBG] After Hit\n"
+dbg_3: .asciz "[DBG] Pop Stack\n"
+dbg_4: .asciz "[DBG] Returned to Main\n"
+dbg_5: .asciz "[DBG] Inside Check Win\n"
+dbg_6: .asciz "[DBG] Before Loop\n"
+msg_debug_addr: .asciz "[DBG] Addr: "
+dbg_trace: .asciz "[DBG] Trace\n"

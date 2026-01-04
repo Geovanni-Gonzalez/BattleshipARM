@@ -8,68 +8,106 @@
 
 /* 
  * print_str
- * Imprime una cadena terminada en nulo (ASCIZ) a STDOUT.
  * Entrada: R0 = Dirección de la cadena
  */
 print_str:
-    push {r0, r1, r2, r7, lr}  @ Guardar registros
-    mov r1, r0                 @ R1 = Buffer (dirección de la cadena)
+    push {r0, r1, r2, r3, r7, lr} @ 6 regs (Aligned)
+    mov r1, r0                 @ R1 = Buffer
     
-    @ Calcular longitud de la cadena
     mov r2, #0                 @ R2 = Contador (longitud)
 calc_len:
-    ldrb r3, [r0, r2]          @ Cargar byte de [R0 + R2]
-    cmp r3, #0                 @ ¿Es nulo?
-    beq do_write               @ Si es 0, terminar
-    add r2, r2, #1             @ Incrementar longitud
+    ldrb r3, [r0, r2]
+    cmp r3, #0
+    beq do_write
+    add r2, r2, #1
     b calc_len
 
 do_write:
-    mov r0, #1                 @ R0 = STDOUT (1)
-    mov r7, #4                 @ R7 = Syscall WRITE (4)
-    svc #0                     @ Llamada al sistema
+    mov r0, #1                 @ STDOUT
+    mov r7, #4                 @ WRITE
+    svc #0
     
-    pop {r0, r1, r2, r7, pc}   @ Restaurar registros y retornar
+    pop {r0, r1, r2, r3, r7, pc}
 
 /*
  * read_str
- * Lee caracteres de STDIN hasta un salto de línea o buffer lleno.
  * Entrada: R0 = Buffer, R1 = Tamaño máximo
- * Salida: R0 = Número de bytes leídos
  */
 read_str:
-    push {r1, r2, r7, lr}
-    mov r2, r1                 @ R2 = Tamaño máximo
-    mov r1, r0                 @ R1 = Buffer
-    mov r0, #0                 @ R0 = STDIN (0)
-    mov r7, #3                 @ R7 = Syscall READ (3)
+    push {r1, r2, r7, lr}      @ 4 regs (Aligned)
+    mov r2, r1
+    mov r1, r0
+    mov r0, #0                 @ STDIN
+    mov r7, #3                 @ READ
     svc #0
     pop {r1, r2, r7, pc}
 
 /*
  * exit_program
- * Finaliza la ejecución del programa.
- * Entrada: R0 = Código de salida
  */
 exit_program:
-    mov r7, #1                 @ R7 = Syscall EXIT (1)
+    mov r7, #1                 @ EXIT
     svc #0
 
 /*
  * print_char
- * Imprime un solo carácter.
- * Entrada: R0 = Carácter (ASCII)
+ * Entrada: R0 = Carácter
  */
 print_char:
-    push {r0, r1, r2, r7, lr}
-    sub sp, sp, #4             @ Reservar espacio en stack para el char
-    strb r0, [sp]              @ Guardar byte en stack
+    push {r0, r1, r2, r3, r7, lr} @ 6 regs (Aligned)
+    sub sp, sp, #8             @ Aligned buffer space
+    strb r0, [sp]
     
     mov r0, #1                 @ STDOUT
-    mov r1, sp                 @ Dirección del buffer (stack)
-    mov r2, #1                 @ Longitud = 1
+    mov r1, sp
+    mov r2, #1                 @ Length = 1
     mov r7, #4                 @ WRITE
     svc #0
     
-    add sp, sp, #4             @ Restaurar stack
-    pop {r0, r1, r2, r7, pc}
+    add sp, sp, #8
+    pop {r0, r1, r2, r3, r7, pc}
+
+/*
+ * print_num
+ * Prints R0 as a decimal number followed by newline.
+ */
+print_num:
+    push {r0, r1, r2, r3, r4, r5, r7, lr} @ 8 regs (Aligned)
+    sub sp, sp, #16             @ Buffer for digits
+    
+    mov r4, r0                  @ R4 = Number
+    mov r5, sp                  @ R5 = Buffer Pointer
+    add r5, r5, #15             @ Start from end
+    mov r1, #0
+    strb r1, [r5]               @ Null terminator? No need, we print chars.
+    
+    mov r1, #10
+    
+    cmp r4, #0
+    bne loop_digits
+    sub r5, r5, #1
+    mov r2, #'0'
+    strb r2, [r5]
+    b done_digits
+
+loop_digits:
+    cmp r4, #0
+    beq done_digits
+    udiv r2, r4, r1             @ R2 = Num / 10
+    mul r3, r2, r1              @ R3 = (Num/10)*10
+    sub r3, r4, r3              @ R3 = Num % 10 (Digit)
+    add r3, r3, #'0'            @ ASCII
+    sub r5, r5, #1
+    strb r3, [r5]
+    mov r4, r2
+    b loop_digits
+
+done_digits:
+    mov r0, r5                  @ String start
+    bl print_str
+    
+    ldr r0, =newline
+    bl print_str
+    
+    add sp, sp, #16
+    pop {r0, r1, r2, r3, r4, r5, r7, pc}

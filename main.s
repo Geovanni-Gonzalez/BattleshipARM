@@ -31,17 +31,14 @@ set_custom_map:
     mov r1, #10
     bl read_str
     
-    @ Convertir input a entero (simplificado: asumiendo 1x o 20)
-    @ Para simplificar, si empieza con '2' es 20, si es '1' y segundo char > '0' es ese numero
-    @ Hagamos un parse basico para 10-20
     ldr r0, =input_buffer
     ldrb r1, [r0]       @ Decena
     ldrb r2, [r0, #1]   @ Unidad
     
     sub r1, r1, #'0'
     mov r3, #10
-    mul r2, r1, r3      @ r2 = r1 * 10
-    mov r1, r2          @ r1 = res
+    mul r12, r1, r3
+    mov r1, r12         @ r1 = res
     ldrb r2, [r0, #1]
     sub r2, r2, #'0'
     add r1, r1, r2      @ R1 = Size
@@ -64,14 +61,9 @@ size_error:
 select_mode:
     ldr r0, =msg_menu_mode
     bl print_str
-    
     ldr r0, =input_buffer
     mov r1, #10
     bl read_str
-    
-    @ ldr r0, =input_buffer
-    @ bl string_to_int  <-- Removed, using ASCII check directly below
-    @ Por simplicidad, chequeamos el caracter ascii
     ldr r0, =input_buffer
     ldrb r0, [r0]
     
@@ -102,7 +94,8 @@ setup_game:
     @ Jugador 1
     ldr r0, =msg_p1_setup
     bl print_str
-    bl print_boards         @ Muestra P1 board
+    ldr r0, =board_player
+    bl print_boards
     ldr r0, =board_player
     bl place_ships_player
     
@@ -113,19 +106,19 @@ setup_game:
     beq setup_ai
     
     @ Setup Player 2 (PvP)
-    bl clear_screen         @ Limpiar pantalla para que P1 no vea
+    bl clear_screen
     ldr r0, =msg_p2_setup
     bl print_str
-    @ Mostrar board P2 (usamos board_enemy como tablero P2)
-    @ Nota: print_boards esta hardcoded para board_player
-    @ Necesitamos print_board_generic tambien?
-    @ Por ahora, reusemos place_ships_player pasando board_enemy
+    ldr r0, =board_enemy
+    bl print_boards
     ldr r0, =board_enemy
     bl place_ships_player
     bl clear_screen
     b start_combat
 
 setup_ai:
+    ldr r0, =dbg_trace
+    bl print_str
     ldr r0, =msg_ai_placing
     bl print_str
     bl place_ships_ai
@@ -134,9 +127,7 @@ setup_ai:
 start_combat:
     ldr r0, =msg_start_game
     bl print_str
-    
-    @ Variable turno: 0=P1, 1=P2/AI
-    mov r4, #0  @ Inicia P1
+    mov r4, #0  @ Turno P1
 
 game_loop:
     cmp r4, #0
@@ -146,11 +137,8 @@ game_loop:
 turn_p1:
     ldr r0, =msg_p1_turn
     bl print_str
-    
-    @ Mostrar vista de enemigo (Fog of War)
     bl print_enemy_view
     
-    @ Input Ataque
     ldr r0, =msg_prompt_coord
     bl print_str
     ldr r0, =input_buffer
@@ -162,17 +150,17 @@ turn_p1:
     cmp r0, #-1
     beq invalid_input_p1
     
-    @ Atacar board_enemy (que es AI o P2)
     ldr r1, =board_enemy
     bl process_attack
+    ldr r0, =dbg_4
+    bl print_str
     
-    @ Check Win P1
-    ldr r0, =board_enemy
+    ldr r0, =board_player
     bl check_win
     cmp r0, #1
     beq p1_wins
     
-    mov r4, #1          @ Cambio turno
+    mov r4, #1
     bl clear_screen_wait
     b game_loop
 
@@ -192,13 +180,11 @@ turn_p2_or_ai:
     cmp r1, #0
     beq ai_logic
     
-    @ Lógica PvP - Turno Player 2
     ldr r0, =msg_p2_turn
     bl print_str
     
-    @ Mostrar Tablero P1 (Fog of War) - Necesitamos funcion print_player_view (ver P1 desde perspectiva P2)
-    @ Por ahora simplificado: P2 ataca a ciegas o ve el resultado anterior?
-    @ Implementemos ataque simple
+    ldr r0, =board_player
+    bl print_boards
     
     ldr r0, =msg_prompt_coord
     bl print_str
@@ -207,20 +193,14 @@ turn_p2_or_ai:
     bl read_str
     ldr r0, =input_buffer
     bl parse_coord
-    
     cmp r0, #-1
     beq invalid_input_p2
-    
-    @ Atacar board_player
     ldr r1, =board_player
     bl process_attack
-    
-    @ Check Win P2
     ldr r0, =board_player
     bl check_win
     cmp r0, #1
     beq p2_wins
-    
     mov r4, #0
     bl clear_screen_wait
     b game_loop
@@ -236,86 +216,56 @@ p2_wins:
     b end_game
 
 ai_logic:
-    @ AI Random Attack
     bl rand
-    @ Modulo Size*Size
-    ldr r1, =current_map_size
-    ldr r1, [r1]
-    mov r3, r1
-    mul r1, r3, r1          @ total cells (Rd!=Rm fix)
-    push {r0}
-    mov r2, r0
-    udiv r0, r0, r1
-    mul r3, r1, r0          @ Use r3 for result to avoid Rd==Rm
-    sub r0, r2, r3          @ r0 = r2 - r3 (Resto)
-    pop {r2}
-    
     ldr r1, =msg_ai_attk
     bl print_str
     
     ldr r1, =board_player
     bl process_attack
     
-    @ Check Win AI
     ldr r0, =board_player
     bl check_win
     cmp r0, #1
     beq ai_wins
-    
-    mov r4, #0
-    b game_loop
 
 ai_wins:
     ldr r0, =msg_ai_wins
     bl print_str
     b end_game
 
-/*
- * process_attack
- * R0 = Index, R1 = Board Address
- */
 process_attack:
-    push {r4, r5, r6, lr}
-    mov r4, r0              @ Index
-    mov r5, r1              @ Board
+    push {r4, r5, r6, r7, r8, lr}
     
-    ldrb r6, [r5, r4]       @ R6 = Valor actual (ID o Agua)
+    mov r4, r0              @ Save Index (SAFE)
+    mov r5, r1              @ Save Board (SAFE)
     
+    ldr r0, =dbg_1
+    bl print_str
+    ldrb r6, [r5, r4]       
     cmp r6, #0
     beq mark_miss
-    
-    cmp r6, #50             @ Ya fue tocado
+    cmp r6, #50
     beq end_process_attack
-    cmp r6, #51             @ Ya fue fallo
+    cmp r6, #51
     beq end_process_attack
     
-    @ Es un barco (1-5)
-    mov r2, #50             @ Marcar como Tocado
+    mov r2, #50             @ Hit
     strb r2, [r5, r4]
-    
     ldr r0, =msg_hit
     bl print_str
     
-    @ Verificar si se hundió el barco de ID R6
-    mov r0, r5              @ Board
-    mov r1, r6              @ Ship ID
-    bl is_ship_sunk
+    ldr r0, =dbg_2
+    bl print_str
     
+    mov r0, r5
+    mov r1, r6
+    bl is_ship_sunk
     cmp r0, #1
     beq notify_sunk
     b end_process_attack
 
 notify_sunk:
     ldr r0, =msg_sunk
-    bl print_str
-    
-    @ R6 tiene el ID (1-5). Obtener nombre.
-    sub r6, r6, #1          @ 0-indexed
-    ldr r1, =ship_names_ptr
-    lsl r6, r6, #2          @ 4 bytes per pointer
-    ldr r0, [r1, r6]        @ Cargar puntero al nombre
-    bl print_str
-    ldr r0, =newline
     bl print_str
     b end_process_attack
 
@@ -327,24 +277,18 @@ mark_miss:
     b end_process_attack
 
 end_process_attack:
-    pop {r4, r5, r6, pc}
+    ldr r0, =dbg_3
+    bl print_str
+    pop {r4, r5, r6, r7, r8, pc}
 
 clear_screen:
-    @ ANSI escape \033[H\033[J
-    push {lr}
+    push {r0, lr}
     ldr r0, =ansi_cls
     bl print_str
-    pop {pc}
+    pop {r0, pc}
 
 clear_screen_wait:
-    push {lr}
-    ldr r0, =msg_press_enter
-    bl print_str
-    ldr r0, =input_buffer
-    mov r1, #2
-    bl read_str
-    bl clear_screen
-    pop {pc}
+    bx lr
 
 end_game:
     mov r0, #0
@@ -358,7 +302,7 @@ msg_p1_turn:  .asciz "\n>>> TURNO JUGADOR 1 <<<\n"
 msg_p2_turn:  .asciz "\n>>> TURNO JUGADOR 2 <<<\n"
 msg_ai_attk:  .asciz "\nAI Ataca...\n"
 msg_press_enter: .asciz "[Presione ENTER para continuar cambio de turno]"
-ansi_cls:     .asciz "\033[H\033[J"
+@ ansi_cls removed (in data.s)
 msg_menu_map:  .asciz "\nConfiguración de Mapa:\n[1] Estándar (10x10)\n[2] Personalizado\nOpción: "
 msg_custom_size: .asciz "Ingrese tamaño (10-20): "
 msg_start_game: .asciz "¡Comienza el combate!\n"
