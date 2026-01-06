@@ -1,30 +1,32 @@
 {
+    "project": "Battleship ARM",
     "tech": [
-        "ARM Assembly",
+        "ARM Assembly (v7)",
         "GNU Toolchain",
-        "Make",
-        "Shell Scripting"
+        "GNU Assembler & Linker",
+        "QEMU (Emulation)"
     ],
     "features": [
-        "Juego de Batalla Naval en Consola",
-        "Modo Jugador vs IA",
-        "Gráficos ANSI y Arte ASCII",
-        "Gestión Manual de Memoria y Pila",
-        "Optimización de Funciones Hoja"
+        "Native Linux Syscalls Integration",
+        "Player vs AI Game Logic",
+        "ANSI Graphics & ASCII Art System",
+        "Manual Memory & Stack Frame Management",
+        "Register-based RNG Optimization"
     ],
     "stack": {
-        "language": "ARM Assembly (v7)",
-        "framework": "Native Linux Syscalls",
+        "language": "ARM Assembly",
+        "framework": "Native Kernel Interface",
         "tools": [
+            "Makefile",
+            "GDB (Debugging)",
             "QEMU",
-            "WSL",
-            "GNU Assembler",
-            "GNU Linker"
-        ]
+            "Git"
+        ],
+        "database": "Direct Memory Mapping (State Storage)"
     },
     "screenshots": [],
     "description": {
-        "es": "Implementación de bajo nivel del juego Batalla Naval en Ensamblador ARM. Ejecutado en QEMU/Linux, destaca por su gestión directa de registros, manejo seguro de la pila, lógica de IA con RNG basado en registros y una interfaz visual pulida con códigos ANSI.",
-        "en": "Low-level implementation of Battleship in ARM Assembly. Running on QEMU/Linux, it features direct register management, safe stack handling, AI logic with register-based RNG, and a polished UI using ANSI codes."
+        "es": "Implementación de bajo nivel del juego Batalla Naval en Ensamblador ARM. Destaca por su gestión directa de registros y lógica de IA optimizada para sistemas embebidos emulados.",
+        "en": "Low-level implementation of Battleship in ARM Assembly. Notable for its direct register management and optimized AI logic for emulated embedded systems."
     }
 }
