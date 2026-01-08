@@ -1,32 +1,56 @@
 {
-    "project": "Battleship ARM",
-    "tech": [
-        "ARM Assembly (v7)",
-        "GNU Toolchain",
-        "GNU Assembler & Linker",
-        "QEMU (Emulation)"
-    ],
-    "features": [
-        "Native Linux Syscalls Integration",
-        "Player vs AI Game Logic",
-        "ANSI Graphics & ASCII Art System",
-        "Manual Memory & Stack Frame Management",
-        "Register-based RNG Optimization"
-    ],
-    "stack": {
-        "language": "ARM Assembly",
-        "framework": "Native Kernel Interface",
-        "tools": [
-            "Makefile",
-            "GDB (Debugging)",
-            "QEMU",
-            "Git"
+    "en": {
+        "tech": [
+            "ARM Assembly (v7)",
+            "GNU Toolchain",
+            "Linux Syscalls",
+            "QEMU Emulation"
         ],
-        "database": "Direct Memory Mapping (State Storage)"
+        "features": [
+            "Native Linux Syscalls Integration",
+            "Player vs AI Game Logic",
+            "ANSI Graphics & ASCII Art System",
+            "Manual Memory & Stack Frame Management",
+            "Register-based RNG Optimization"
+        ],
+        "stack": {
+            "language": "ARM Assembly",
+            "framework": "Native Interface",
+            "tools": [
+                "AS (Assembler)",
+                "LD (Linker)",
+                "GDB"
+            ],
+            "database": "Memory Mapped State"
+        },
+        "screenshots": [],
+        "description": "A technical showcase of low-level systems programming, this Battleship game is written entirely in ARMv7 Assembly. It bypasses high-level libraries to interact directly with the Linux kernel via system calls, implementing manual stack management, register-optimized random number generation, and a custom ANSI-based graphics engine. Developed for QEMU emulation, the project demonstrates a profound understanding of RISC architecture and bare-metal resource orchestration."
     },
-    "screenshots": [],
-    "description": {
-        "es": "Implementación de bajo nivel del juego Batalla Naval en Ensamblador ARM. Destaca por su gestión directa de registros y lógica de IA optimizada para sistemas embebidos emulados.",
-        "en": "Low-level implementation of Battleship in ARM Assembly. Notable for its direct register management and optimized AI logic for emulated embedded systems."
+    "es": {
+        "tech": [
+            "Ensamblador ARM (v7)",
+            "GNU Toolchain",
+            "Syscalls de Linux",
+            "Emulación QEMU"
+        ],
+        "features": [
+            "Integración nativa con llamadas al sistema Linux",
+            "Lógica de juego Jugador vs IA",
+            "Sistema de gráficos ANSI y ASCII Art",
+            "Gestión manual de memoria y marcos de pila",
+            "Optimización de RNG basada en registros"
+        ],
+        "stack": {
+            "language": "Ensamblador ARM",
+            "framework": "Interfaz Nativa",
+            "tools": [
+                "AS (Ensamblador)",
+                "LD (Enlazador)",
+                "GDB"
+            ],
+            "database": "Estado en Memoria"
+        },
+        "screenshots": [],
+        "description": "Una demostración técnica de programación de sistemas de bajo nivel, este juego de Batalla Naval está escrito íntegramente en ensamblador ARMv7. Evita el uso de librerías de alto nivel para interactuar directamente con el núcleo de Linux mediante llamadas al sistema, implementando gestión manual de la pila, generación de números aleatorios optimizada para registros y un motor gráfico personalizado basado en ANSI. Desarrollado para emulación en QEMU, el proyecto demuestra un profundo entendimiento de la arquitectura RISC y la orquestación de recursos de hardware."
     }
 }
