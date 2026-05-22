@@ -1,27 +1,78 @@
-# Battleship ARM
-
-Proyecto de Batalla Naval desarrollado en Lenguaje Ensamblador ARM para Raspberry Pi (Raspbian).
+﻿# Battleship ARM
 
 ## Descripción
+Implementación del juego Battleship en ensamblador ARM, organizada por tablero, barcos, entrada/salida, datos y utilidades.
 
-Este programa implementa el clásico juego de mesa "Batalla Naval" (Battleship) en una interfaz de consola. El usuario compite contra una IA básica en un tablero de 10x10. Se incluye soporte para la colocación de barcos y un sistema de turnos.
+## Objetivo
+Practicar programación de bajo nivel, modularización en ensamblador y compilación con Makefile.
 
-## Requerimientos
+## Tecnologías utilizadas
+- ARM Assembly
+- Makefile
+- GNU toolchain
+- Consola
 
-- Hardware: Raspberry Pi o Emulador QEMU para ARM.
-- SO: Linux (Raspbian recomendado).
-- Herramientas: Ensamblador GNU (`as`) y Enlazador (`ld`).
+## Funcionalidades principales
+- Lógica base de Battleship
+- Módulos separados
+- Compilación con Makefile
+- Ejecutable incluido
 
-## Estructura del Proyecto
+## Mi rol
+Implementé la lógica principal y módulos de apoyo en ensamblador.
 
-- `start.s`: Punto de entrada (`_start`).
-- `board.s`: Lógica del tablero.
-- `ships.s`: Definición y gestión de barcos.
-- `io.s`: Rutinas de entrada/salida (Syscalls).
-- `data.s`: Secciones de datos y constantes.
+## Aprendizajes clave
+- Registros ARM
+- Modularización ASM
+- Makefile
+- Flujo de juego bajo nivel
 
-## Compilación y Ejecución
+## Instalación y ejecución
+El Makefile usa `arm-linux-gnueabihf-as`, `arm-linux-gnueabihf-ld` y `qemu-arm`.
+```bash
+cd BattleshipARM
+make
+make run
+```
+También puede ejecutarse el binario directamente en un entorno ARM compatible:
+```bash
+./battleship
+```
 
-1. Ensamblar: `as -o main.o start.s board.s ships.s io.s data.s`
-2. Enlazar: `ld -o battleship main.o`
-3. Ejecutar: `./battleship`
+## Estructura del proyecto
+- src/main.s: flujo
+- src/board.s y ships.s: tablero/barcos
+- src/io.s, data.s, utils.s: soporte
+- Makefile: compilación
+
+## Capturas o demo
+![Captura principal](screenshots/principalImage.png)
+
+## Estado del proyecto
+Proyecto académico funcional según entorno.
+
+## Valor técnico demostrado
+Evidencia comprensión de arquitectura ARM y manejo manual de flujo.
+
+## Mejoras futuras
+- Agregar guía de instalación del toolchain ARM
+- Agregar casos de ejecución
+- Incluir partida completa
+
+## Autor
+Geovanni González  
+Estudiante de Ingeniería en Computación  
+GitHub: [Geovanni-Gonzalez](https://github.com/Geovanni-Gonzalez)
+
+
+
+
+
+
+
+
+
+
+
+
+
