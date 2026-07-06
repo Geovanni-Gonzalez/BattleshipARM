@@ -1,5 +1,7 @@
 ﻿# Battleship ARM
 
+[![CI](https://github.com/Geovanni-Gonzalez/BattleshipARM/actions/workflows/ci.yml/badge.svg)](https://github.com/Geovanni-Gonzalez/BattleshipARM/actions/workflows/ci.yml)
+
 ## Descripción
 Implementación del juego Battleship en ensamblador ARM, organizada por tablero, barcos, entrada/salida, datos y utilidades.
 
