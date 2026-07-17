@@ -6,8 +6,7 @@
 
 @ --- INICIALIZACIÓN ---
 init_boards:
-    push {r0, r1, r2, r3, r4, lr} @ 6 regs = 24 bytes (Aligned? No. 6*4=24. 24%8=0. YES Aligned.)
-    @ Wait, 24 is 8-byte aligned? Yes. 8*3=24.
+    push {r0, r1, r2, r3, r4, lr} @ 6 regs = 24 bytes (multiplo de 8: pila alineada segun AAPCS)
     ldr r0, =board_player
     mov r1, #400
     mov r2, #0
